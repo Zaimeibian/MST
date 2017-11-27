@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <iostream>  
+#include <fstream>  
+#include <iomanip> 
 
 struct LinkNode
 {
@@ -13,7 +16,7 @@ struct HeapNode
 {
 	int v;
 	int key;
-}
+};
 
 struct Heap
 {
@@ -42,7 +45,7 @@ struct LinkNode* newNode(int dest, int weig){
 }
 
 struct Graph* createGraph(int V){
-	struct Graph* graph = (struct Graph*)malloc(sizeof(struc Graph));
+	struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
 	graph->V = V;
 	graph->array = (struct Node*)malloc(V*sizeof(struct Node));
 	for(int i=0; i<V; ++i)
@@ -67,13 +70,13 @@ struct HeapNode* newHeapNode(int v, int key){
 	return heapNode;
 }
 
-sturct Heap* createHeap(int capacity){
+struct Heap* createHeap(int capacity){
 	struct Heap* heap = (struct Heap*)malloc(sizeof(struct Heap));
-	Heap->pos = (int *)malloc(capacity * sizeof(int));
-	Heap->size = 0;
-	Heap->capacity = capacity;
-	Heap->array = (struct Heap**)malloc(capacity * sizeof(struct Heap*));
-	return Heap;
+	heap->pos = (int *)malloc(capacity * sizeof(int));
+	heap->size = 0;
+	heap->capacity = capacity;
+	heap->array = (struct Heap**)malloc(capacity * sizeof(struct Heap*));
+	return heap;
 }
 
 void swapNode(struct HeapNode** a, struct HeapNode** b){
@@ -92,7 +95,7 @@ void heapify(struct Heap* heap, int idx){
 		heap->array[left]->key < heap->array[smallest]->key)
 	smallest = left;
 
-	if (right < minHeap->size &&
+	if (right < heap->size &&
 		heap->array[right]->key < heap->array[smallest]->key)
 	smallest = right;
 
@@ -132,7 +135,7 @@ struct HeapNode* extractMin(struct Heap* heap){
 void decreaseKey(struct Heap* heap, int v, int key){
 	int i = heap->pos[v];
 	heap->array[i]->key = key;
-	while(i && heap->array[i]-key < heap->array[(i-1)/2]->key){
+	while(i && heap->array[i]->key < heap->array[(i-1)/2]->key){
 		heap->pos[heap->array[i]->v] = (i-1)/2;
 		heap->pos[heap->array[(i-1)/2]->v] = i;
 		swapNode(&heap->array[i], &heap->array[(i-1)/2]);
@@ -148,7 +151,7 @@ bool isInHeap(struct Heap* heap, int v){
 }
 
 void PrimMst(struct Graph* graph){
-	int V - graph->V;
+	int V = graph->V;
 	int parent[V];
 	int key[V];
 	ofstream outFile;
@@ -164,7 +167,7 @@ void PrimMst(struct Graph* graph){
 	key[0] = 0;
 	heap->array[0] = newHeapNode(0, key[0]);
 	heap->pos[0] = 0;
-	heap-size = V;
+	heap->size = V;
 
 	while(!isEmpty(heap)){
 		struct HeapNode* heapNode = extractMin(heap);
@@ -188,7 +191,7 @@ void PrimMst(struct Graph* graph){
 	}
 	outFile.close();
 }
-struct Graph* readGraph(*char path){
+struct Graph* readGraph(char* path){
 	char buffer[256];
 	int V, E;
 	int src, dest, weig;
