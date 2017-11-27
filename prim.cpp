@@ -75,7 +75,7 @@ struct Heap* createHeap(int capacity){
 	heap->pos = (int *)malloc(capacity * sizeof(int));
 	heap->size = 0;
 	heap->capacity = capacity;
-	heap->array = (struct Heap**)malloc(capacity * sizeof(struct Heap*));
+	heap->array = (struct HeapNode**)malloc(capacity * sizeof(struct HeapNode*));
 	return heap;
 }
 
