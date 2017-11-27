@@ -4,6 +4,7 @@
 #include <iostream>  
 #include <fstream>  
 #include <iomanip> 
+using namespace std;
 
 struct LinkNode
 {
@@ -176,7 +177,7 @@ void PrimMst(struct Graph* graph){
 		if(u!=0){
 			a = parent[u]+97;
 			b = u+97;
-			outFile<<"("<<a<<","<<b<<")"<<"="<key[u]<<"\n";
+			outFile<<"("<<a<<","<<b<<")"<<"="<<key[u]<<"\n";
 		}
 		struct LinkNode* pCrawl = graph->array[u].head;
 		while(pCrawl != NULL){
