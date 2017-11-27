@@ -223,7 +223,7 @@ struct Graph* readGraph(char* path){
 		weig[1] = buffer[7];
 		weig[2] = buffer[8];
 		weigh = atoi(weig);
-		printf("src is %d, dest is %d, weight is %d\n", src, dest, weigh);
+		//printf("src is %d, dest is %d, weight is %d\n", src, dest, weigh);
 		addEdge(graph, src, dest, weigh);
 		i++;
 	}
@@ -241,6 +241,7 @@ int main(){
 	else{
 		struct Graph* graph = readGraph(path);
 		PrimMst(graph);
+		printf("program done, you can check the two output file now\n");
 	}
 	return 0;
 }
