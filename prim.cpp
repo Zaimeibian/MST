@@ -37,6 +37,32 @@ struct Graph
 	struct Node* array;
 };
 
+struct Edge{
+	int src, dest, weight;
+};
+
+
+struct GraphK{
+	int V, E;
+	struct Edge* edge;
+};
+
+struct GraphK* createGraphK(int V, int E)
+{
+	struct GraphK* graph = new GraphK;
+	graph->V = V;
+	graph->E = E;
+
+	graph->edge = new Edge[E];
+
+	return graph;
+}
+
+struct subset{
+	int parent;
+	int rank;
+};
+
 struct LinkNode* newNode(int dest, int weig){
 	struct LinkNode* newNo = (struct LinkNode*)malloc(sizeof(struct LinkNode));
 	newNo->dest = dest;
@@ -199,7 +225,7 @@ void PrimMst(struct Graph* graph){
 	}
 	outFile.close();
 }
-struct Graph* readGraph(char* path){
+struct Graph* readGraphP(char* path){
 	char buffer[256];
 	char weig[3];
 	int V, E;
@@ -231,6 +257,129 @@ struct Graph* readGraph(char* path){
 	return graph;
 }
 
+
+
+int find(struct subset subsets[], int i)
+{
+	if (subsets[i].parent != i)
+		subsets[i].parent = find(subsets, subsets[i].parent);
+
+	return subsets[i].parent;
+}
+
+
+void Union(struct subset subsets[], int x, int y)
+{
+	int xroot = find(subsets, x);
+	int yroot = find(subsets, y);
+
+
+	if (subsets[xroot].rank < subsets[yroot].rank)
+		subsets[xroot].parent = yroot;
+	else if (subsets[xroot].rank > subsets[yroot].rank)
+		subsets[yroot].parent = xroot;
+
+	else
+	{
+		subsets[yroot].parent = xroot;
+		subsets[xroot].rank++;
+	}
+}
+
+
+int myComp(const void* a, const void* b)
+{
+	struct Edge* a1 = (struct Edge*)a;
+	struct Edge* b1 = (struct Edge*)b;
+	return a1->weight - b1->weight;
+}
+
+
+struct GraphK* readGraphK(char* path){
+	char buffer[256];
+	int src, dest, weigh;
+	int V, E;
+	char weig[3];
+	int i=0;
+	fstream file;
+	file.open(path,ios::in);
+	file.getline(buffer, 256, '\n');
+	sscanf(buffer, "%d", &V);
+	//printf("the V is %d\n",V);
+	file.getline(buffer, 256, '\n');
+	file.getline(buffer, 256, '\n');
+	sscanf(buffer, "%d", &E);
+	struct GraphK* graph = createGraphK(V, E);
+	//printf("the E is %d\n",E);
+	while(i<E){
+		file.getline(buffer, 256, '\n');
+		src = buffer[1]-97;
+		dest = buffer[3]-97;
+		weig[0] = buffer[6];
+		weig[1] = buffer[7];
+		weig[2] = buffer[8];
+		weigh = atoi(weig);
+		//printf("src is %d, dest is %d, weight is %d\n", src, dest, weigh);
+		graph->edge[i].src = src;
+		graph->edge[i].dest = dest;
+		graph->edge[i].weight = weigh;
+		i++;
+	}
+	file.close();
+	return graph;
+}
+
+void KruskalMST(struct GraphK* graph)
+{
+	int V = graph->V;
+	struct Edge result[V];
+	int e = 0; 
+	int i = 0; 
+	int n, m;
+	char a[V], b[V];
+	ofstream outFile;
+	outFile.open("kruskalMst.txt", ios::trunc);
+	//printf("the size of element is %d\n", sizeof(int));
+	qsort(graph->edge, graph->E, sizeof(graph->edge[0]), myComp);
+
+	
+	struct subset *subsets =
+		(struct subset*) malloc( V * sizeof(struct subset) );
+
+
+	for (int v = 0; v < V; ++v)
+	{
+		subsets[v].parent = v;
+		subsets[v].rank = 0;
+	}
+
+	while (e < V - 1)
+	{
+
+		struct Edge next_edge = graph->edge[i++];
+		//printf("the weight is %d\n", next_edge.weight);
+		n = find(subsets, next_edge.src);
+		m = find(subsets, next_edge.dest);
+
+		if (n != m)
+		{
+			result[e++] = next_edge;
+			Union(subsets, n, m);
+		}
+
+	}
+
+	outFile<<e<<"\n";
+	for (i = 0; i < e; ++i){
+		a[i] = result[i].src+97;
+		b[i] = result[i].dest+97;
+		outFile<<"("<<a[i]<<","<<b[i]<<")"<<"="<<result[i].weight<<"\n";
+	}
+	return;
+}
+
+
+
 int main(){
 	char path[256];
 	char rpath[] = "graph.txt";
@@ -239,8 +388,10 @@ int main(){
 	if(strcmp(path, rpath))
 		printf("input file must be 'graph.txt',please run again\n");
 	else{
-		struct Graph* graph = readGraph(path);
-		PrimMst(graph);
+		struct GraphK* graphK = readGraphK(path);
+		struct Graph* graphP = readGraphP(path);
+		PrimMst(graphP);
+		KruskalMST(graphK);
 		printf("program done, you can check the two output file now\n");
 	}
 	return 0;
