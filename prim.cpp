@@ -201,8 +201,9 @@ void PrimMst(struct Graph* graph){
 }
 struct Graph* readGraph(char* path){
 	char buffer[256];
+	char weig[3];
 	int V, E;
-	int src, dest, weig;
+	int src, dest, weigh;
 	int i=0;
 	fstream file;
 	file.open(path,ios::in);
@@ -218,9 +219,12 @@ struct Graph* readGraph(char* path){
 		file.getline(buffer, 256, '\n');
 		src = buffer[1]-97;
 		dest = buffer[3]-97;
-		weig = buffer[6]-48;
-		//printf("src is %d, dest is %d, weight is %d\n", src, dest, weig);
-		addEdge(graph, src, dest, weig);
+		weig[0] = buffer[6];
+		weig[1] = buffer[7];
+		weig[2] = buffer[8];
+		weigh = atoi(weig);
+		printf("src is %d, dest is %d, weight is %d\n", src, dest, weigh);
+		addEdge(graph, src, dest, weigh);
 		i++;
 	}
 	file.close();
@@ -229,9 +233,14 @@ struct Graph* readGraph(char* path){
 
 int main(){
 	char path[256];
+	char rpath[] = "graph.txt";
 	printf("please enter the path of 'graph.in'\n");
 	cin>>path;
-	struct Graph* graph = readGraph(path);
-	PrimMst(graph);
+	if(strcmp(path, rpath))
+		printf("input file must be 'graph.txt',please run again\n");
+	else{
+		struct Graph* graph = readGraph(path);
+		PrimMst(graph);
+	}
 	return 0;
 }
