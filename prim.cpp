@@ -154,7 +154,9 @@ bool isInHeap(struct Heap* heap, int v){
 void PrimMst(struct Graph* graph){
 	int V = graph->V;
 	int parent[V];
-	int key[V];
+	int key[V], w[V];
+	int c;
+	char a[V], b[V];
 	ofstream outFile;
 	outFile.open("primMst.txt", ios::trunc);
 	struct Heap* heap = createHeap(V);
@@ -173,11 +175,12 @@ void PrimMst(struct Graph* graph){
 	while(!isEmpty(heap)){
 		struct HeapNode* heapNode = extractMin(heap);
 		int u = heapNode->v;
-		char a,b;
+		//printf("w is %d\n", heapNode->key);
 		if(u!=0){
-			a = parent[u]+97;
-			b = u+97;
-			outFile<<"("<<a<<","<<b<<")"<<"="<<key[u]<<"\n";
+			a[c] = parent[u]+97;
+			b[c] = u+97;
+			w[c] = heapNode->key;
+			c++;
 		}
 		struct LinkNode* pCrawl = graph->array[u].head;
 		while(pCrawl != NULL){
@@ -190,25 +193,35 @@ void PrimMst(struct Graph* graph){
 			pCrawl = pCrawl->next;
 		}
 	}
+	outFile<<c<<"\n";
+	for(int i=0; i<c; i++){
+		outFile<<"("<<a[i]<<","<<b[i]<<")"<<"="<<w[i]<<"\n";
+	}
 	outFile.close();
 }
 struct Graph* readGraph(char* path){
 	char buffer[256];
 	int V, E;
 	int src, dest, weig;
+	int i=0;
 	fstream file;
 	file.open(path,ios::in);
 	file.getline(buffer, 256, '\n');
-	V =(int)buffer[0];
+	sscanf(buffer, "%d", &V);
+	//printf("the V is %d\n",V);
 	struct Graph* graph = createGraph(V);
 	file.getline(buffer, 256, '\n');
 	file.getline(buffer, 256, '\n');
-	while(!file.eof()){
+	sscanf(buffer, "%d", &E);
+	//printf("the E is %d\n",E);
+	while(i<E){
 		file.getline(buffer, 256, '\n');
 		src = buffer[1]-97;
 		dest = buffer[3]-97;
-		weig = buffer[6]-0;
+		weig = buffer[6]-48;
+		//printf("src is %d, dest is %d, weight is %d\n", src, dest, weig);
 		addEdge(graph, src, dest, weig);
+		i++;
 	}
 	file.close();
 	return graph;
@@ -216,7 +229,7 @@ struct Graph* readGraph(char* path){
 
 int main(){
 	char path[256];
-	printf("please enter the path of 'graph.in'");
+	printf("please enter the path of 'graph.in'\n");
 	cin>>path;
 	struct Graph* graph = readGraph(path);
 	PrimMst(graph);
